@@ -63,20 +63,41 @@ namespace SteamLobbyTutorial
                 }
             }
 
+            Debug.Log($"playerListParent child count: {playerListParent.childCount}");
+            Debug.Log($"Ordered members count: {orderedMembers.Count}");
+
             int j = 0;
             foreach (var member in orderedMembers)
             {
-                TextMeshProUGUI txtMesh = playerListParent.GetChild(j).GetChild(0).GetComponent<TextMeshProUGUI>();
-                PlayerLobbyHandler playerLobbyHandler = playerListParent.GetChild(j).GetComponent<PlayerLobbyHandler>();
+                // Check before accessing the child
+                if (j >= playerListParent.childCount)
+                {
+                    Debug.LogWarning($"Not enough UI slots for player index {j}. Skipping update.");
+                    continue;
+                }
+
+                Transform playerEntry = playerListParent.GetChild(j);
+                if (playerEntry.childCount == 0)
+                {
+                    Debug.LogError($"playerListParent child at index {j} has no children!");
+                    break;
+                }
+
+                TextMeshProUGUI txtMesh = playerEntry.GetChild(0).GetComponent<TextMeshProUGUI>();
+                PlayerLobbyHandler playerLobbyHandler = playerEntry.GetComponent<PlayerLobbyHandler>();
 
                 playerLobbyHandlers.Add(playerLobbyHandler);
                 playerNameTexts.Add(txtMesh);
 
                 string playerName = SteamFriends.GetFriendPersonaName(member);
                 playerNameTexts[j].text = playerName;
+
+                Debug.Log($"Set player name: {playerName} at index {j}");
+
                 j++;
             }
         }
+
 
         public void OnPlayButtonClicked()
         {
