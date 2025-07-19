@@ -89,7 +89,7 @@ namespace SteamLobbyTutorial
                 string playerName = SteamFriends.GetFriendPersonaName(member);
                 txtMesh.text = playerName;
             }
-
+            Debug.Log($"Players: {orderedMembers.Count}, Slots: {maxSlots}");
             // If we have more players than slots, log a warning
             if (orderedMembers.Count > maxSlots)
             {
@@ -107,7 +107,20 @@ namespace SteamLobbyTutorial
 
         public void RegisterPlayer(PlayerLobbyHandler player)
         {
-            player.transform.SetParent(playerListParent, false);
+            // Don't add as new child - use existing slots
+            // player.transform.SetParent(playerListParent, false); // REMOVE THIS LINE
+
+            // Instead, find an available slot and parent the player to it
+            foreach (Transform slot in playerListParent)
+            {
+                if (slot.childCount == 0) // Find first empty slot
+                {
+                    player.transform.SetParent(slot, false);
+                    player.transform.localPosition = Vector3.zero;
+                    break;
+                }
+            }
+
             UpdatePlayerLobbyUI();
         }
 
