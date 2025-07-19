@@ -566,6 +566,8 @@ MonoBehaviour:
   playerNameTexts: []
   playerLobbyHandlers: []
   playGameButton: {fileID: 1145281206}
+  maxSlots: 4
+  playerSlotPrefab: {fileID: 4650272539521798688, guid: 34869870c736b8749acc6a887f309e14, type: 3}
 --- !u!1 &731126043
 GameObject:
   m_ObjectHideFlags: 0
