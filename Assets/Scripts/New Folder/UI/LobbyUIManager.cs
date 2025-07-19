@@ -66,13 +66,7 @@ namespace SteamLobbyTutorial
             int j = 0;
             foreach (var member in orderedMembers)
             {
-                
                 TextMeshProUGUI txtMesh = playerListParent.GetChild(j).GetChild(0).GetComponent<TextMeshProUGUI>();
-                if (txtMesh == null)
-                {
-                    Debug.LogError($"No TextMeshProUGUI found in playerListParent child {j}");
-                }
-
                 PlayerLobbyHandler playerLobbyHandler = playerListParent.GetChild(j).GetComponent<PlayerLobbyHandler>();
 
                 playerLobbyHandlers.Add(playerLobbyHandler);

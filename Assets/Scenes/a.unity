@@ -306,6 +306,7 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  playerGameplayPrefab: {fileID: 0}
 --- !u!114 &86138361
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -580,9 +581,10 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   playerListParent: {fileID: 79574603}
+  playerSlotPrefab: {fileID: 527530346504686500, guid: 661d98b194d87fa4cb6d7215b5df2ec5, type: 3}
+  playGameButton: {fileID: 1113829793}
   playerNameTexts: []
   playerLobbyHandlers: []
-  playGameButton: {fileID: 1113829793}
 --- !u!1 &484421274
 GameObject:
   m_ObjectHideFlags: 0
