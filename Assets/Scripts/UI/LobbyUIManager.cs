@@ -31,7 +31,16 @@ namespace SteamLobbyTutorial
 
         void Start()
         {
-            playGameButton.interactable = false;
+            StartCoroutine(EnablePlayButtonAfterDelay());
+        }
+
+        IEnumerator EnablePlayButtonAfterDelay()
+        {
+            yield return new WaitForSeconds(0.5f); // allow Mirror to start up
+            if (NetworkServer.active)
+            {
+                playGameButton.interactable = true;
+            }
         }
 
         public void UpdatePlayerLobbyUI()
@@ -108,25 +117,25 @@ namespace SteamLobbyTutorial
 
 
 
-        [Server]
-        public void CheckAllPlayersReady()
-        {
-            foreach (var player in playerLobbyHandlers)
-            {
-                if (!player.isReady)
-                {
-                    RpcSetPlayButtonInteractable(false);
-                    return;
-                }
-            }
-            RpcSetPlayButtonInteractable(true);
-        }
+        // [Server]
+        // public void CheckAllPlayersReady()
+        // {
+        //     foreach (var player in playerLobbyHandlers)
+        //     {
+        //         if (!player.isReady)
+        //         {
+        //             RpcSetPlayButtonInteractable(false);
+        //             return;
+        //         }
+        //     }
+        //     RpcSetPlayButtonInteractable(true);
+        // }
 
-        [ClientRpc]
-        void RpcSetPlayButtonInteractable(bool truthStatus)
-        {
-            playGameButton.interactable = truthStatus;
-        }
+        // [ClientRpc]
+        // void RpcSetPlayButtonInteractable(bool truthStatus)
+        // {
+        //     playGameButton.interactable = truthStatus;
+        // }
 
         private IEnumerator RetryUpdate()
         {
