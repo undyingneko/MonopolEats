@@ -63,19 +63,26 @@ namespace SteamLobbyTutorial
                 }
             }
 
-            int j = 0;
-            foreach (var member in orderedMembers)
-            {
-                TextMeshProUGUI txtMesh = playerListParent.GetChild(j).GetChild(0).GetComponent<TextMeshProUGUI>();
-                PlayerLobbyHandler playerLobbyHandler = playerListParent.GetChild(j).GetComponent<PlayerLobbyHandler>();
+            int maxSlots = playerListParent.childCount;
+            int maxPlayers = Mathf.Min(maxSlots, orderedMembers.Count);
 
-                playerLobbyHandlers.Add(playerLobbyHandler);
+            if (orderedMembers.Count > maxSlots)
+                Debug.LogWarning("Not enough player UI slots for all players!");
+
+            for (int j = 0; j < maxPlayers; j++)
+            {
+                var member = orderedMembers[j];
+                Transform slot = playerListParent.GetChild(j);
+                TextMeshProUGUI txtMesh = slot.GetChild(0).GetComponent<TextMeshProUGUI>();
+                PlayerLobbyHandler playerLobbyHandler = slot.GetComponent<PlayerLobbyHandler>();
+
                 playerNameTexts.Add(txtMesh);
+                playerLobbyHandlers.Add(playerLobbyHandler);
 
                 string playerName = SteamFriends.GetFriendPersonaName(member);
-                playerNameTexts[j].text = playerName;
-                j++;
+                txtMesh.text = playerName;
             }
+
         }
 
         public void OnPlayButtonClicked()
