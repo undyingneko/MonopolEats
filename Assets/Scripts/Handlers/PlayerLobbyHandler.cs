@@ -15,7 +15,7 @@ namespace SteamLobbyTutorial
 
         void Start()
         {
-            readyButton.interactable = isLocalPlayer;
+            readyButton.interactable = isLocalPlayer;   
         }
 
         public override void OnStartLocalPlayer()

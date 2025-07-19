@@ -306,6 +306,10 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
+  clientLoadedScene: 0
+  <mode>k__BackingField: 0
+  finishStartHostPending: 0
+  clientSceneOperation: 0
   playerGameplayPrefab: {fileID: 0}
 --- !u!114 &86138361
 MonoBehaviour:
@@ -367,6 +371,12 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  lastSyncTime: 0
+  <netIdentity>k__BackingField: {fileID: 0}
+  <ComponentIndex>k__BackingField: 0
+  syncVarDirtyBits: 0
+  syncObjectDirtyBits: 0
+  syncVarHookGuard: 0
   hostButton: {fileID: 484421274}
   lobbyID: 0
   networkManager: {fileID: 86138360}
@@ -580,11 +590,16 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  lastSyncTime: 0
+  <netIdentity>k__BackingField: {fileID: 0}
+  <ComponentIndex>k__BackingField: 0
+  syncVarDirtyBits: 0
+  syncObjectDirtyBits: 0
+  syncVarHookGuard: 0
   playerListParent: {fileID: 79574603}
-  playerSlotPrefab: {fileID: 527530346504686500, guid: 661d98b194d87fa4cb6d7215b5df2ec5, type: 3}
-  playGameButton: {fileID: 1113829793}
   playerNameTexts: []
   playerLobbyHandlers: []
+  playGameButton: {fileID: 1113829793}
 --- !u!1 &484421274
 GameObject:
   m_ObjectHideFlags: 0
