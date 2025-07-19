@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Mirror;
+using SteamLobbyTutorial;
 
 /*
 	Documentation: https://mirror-networking.gitbook.io/docs/components/network-manager
@@ -23,6 +24,7 @@ public class CustomNetworkManager : NetworkManager
     public override void Awake()
     {
         base.Awake();
+        this.maxConnections = SteamLobby.Instance != null ? SteamLobby.Instance.maxPlayers : 4; // Default to 4 if null
     }
 
     #region Unity Callbacks

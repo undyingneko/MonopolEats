@@ -17,7 +17,7 @@ namespace SteamLobbyTutorial
         protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
         protected Callback<LobbyEnter_t> lobbyEntered;
         protected Callback<LobbyChatUpdate_t> lobbyChatUpdate;
-
+        public int maxPlayers = 4;
         private const string HostAddressKey = "HostAddress";
 
         void Awake()
@@ -44,10 +44,14 @@ namespace SteamLobbyTutorial
             panelSwapper.gameObject.SetActive(true);
             lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
             gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
-            lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);
+            lobbyEntered = Callback<LobbyEnter_t>.Create(LobbyEntered);  // Changed from OnLobbyEntered to LobbyEntered
             lobbyChatUpdate = Callback<LobbyChatUpdate_t>.Create(OnLobbyChatUpdate);
         }
 
+        public void CreateLobby()
+        {
+            SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, maxPlayers);
+        }
         public void HostLobby()
         {
             SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, networkManager.maxConnections);
@@ -81,19 +85,26 @@ namespace SteamLobbyTutorial
             SteamMatchmaking.JoinLobby(callback.m_steamIDLobby);
         }
 
-        void OnLobbyEntered(LobbyEnter_t callback)
+        // In your SteamLobby class's LobbyEntered callback
+        private void LobbyEntered(LobbyEnter_t callback)
         {
-            if (NetworkServer.active)
+            if (callback.m_EChatRoomEnterResponse != (uint)EChatRoomEnterResponse.k_EChatRoomEnterResponseSuccess)
             {
-                Debug.Log("Already in a lobby as a host. Ignorning join request");
+                Debug.Log("Failed to enter lobby");
                 return;
             }
-            lobbyID = callback.m_ulSteamIDLobby;
-            string _hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
-            networkManager.networkAddress = _hostAddress;
-            Debug.Log("Entered lobby: " + callback.m_ulSteamIDLobby);
-            networkManager.StartClient();
-            panelSwapper.SwapPanel("LobbyPanel");
+
+            CSteamID lobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+            int currentPlayers = SteamMatchmaking.GetNumLobbyMembers(lobbyID);
+
+            if (currentPlayers >= maxPlayers)
+            {
+                Debug.Log("Lobby is full");
+                SteamMatchmaking.LeaveLobby(lobbyID);
+                return;
+            }
+
+            // Rest of your lobby entered logic...
         }
 
         void OnLobbyChatUpdate(LobbyChatUpdate_t callback)
