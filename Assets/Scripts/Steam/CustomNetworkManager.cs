@@ -24,7 +24,7 @@ public class CustomNetworkManager : NetworkManager
     public override void Awake()
     {
         base.Awake();
-        this.maxConnections = SteamLobby.Instance != null ? SteamLobby.Instance.maxPlayers : 4; // Default to 4 if null
+        this.maxConnections = 4; // Same as SteamLobby.maxPlayers
     }
 
     #region Unity Callbacks

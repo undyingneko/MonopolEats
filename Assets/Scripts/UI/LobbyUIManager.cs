@@ -42,6 +42,14 @@ namespace SteamLobbyTutorial
             var lobby = new CSteamID(SteamLobby.Instance.lobbyID);
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
 
+            // Clear all slots first
+            foreach (Transform child in playerListParent)
+            {
+                TextMeshProUGUI txtMesh = child.GetChild(0).GetComponent<TextMeshProUGUI>();
+                txtMesh.text = "";
+                child.gameObject.SetActive(false);
+            }
+
             CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
             List<CSteamID> orderedMembers = new List<CSteamID>();
 
@@ -66,13 +74,12 @@ namespace SteamLobbyTutorial
             int maxSlots = playerListParent.childCount;
             int maxPlayers = Mathf.Min(maxSlots, orderedMembers.Count);
 
-            if (orderedMembers.Count > maxSlots)
-                Debug.LogWarning("Not enough player UI slots for all players!");
-
             for (int j = 0; j < maxPlayers; j++)
             {
                 var member = orderedMembers[j];
                 Transform slot = playerListParent.GetChild(j);
+                slot.gameObject.SetActive(true);
+
                 TextMeshProUGUI txtMesh = slot.GetChild(0).GetComponent<TextMeshProUGUI>();
                 PlayerLobbyHandler playerLobbyHandler = slot.GetComponent<PlayerLobbyHandler>();
 
@@ -83,6 +90,11 @@ namespace SteamLobbyTutorial
                 txtMesh.text = playerName;
             }
 
+            // If we have more players than slots, log a warning
+            if (orderedMembers.Count > maxSlots)
+            {
+                Debug.LogWarning($"Not enough player UI slots! Players: {orderedMembers.Count}, Slots: {maxSlots}");
+            }
         }
 
         public void OnPlayButtonClicked()
