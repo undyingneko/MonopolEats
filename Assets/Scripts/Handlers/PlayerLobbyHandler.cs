@@ -15,7 +15,7 @@ namespace SteamLobbyTutorial
 
         void Start()
         {
-            readyButton.interactable = isLocalPlayer;   
+            readyButton.interactable = isLocalPlayer;
         }
 
         public override void OnStartLocalPlayer()
@@ -66,6 +66,20 @@ namespace SteamLobbyTutorial
             else
             {
                 SetSelectedButtonColor(Color.white);
+            }
+        }
+
+        public void ResetState()
+        {
+            isReady = false;
+            if (readyButton != null)
+            {
+                readyButton.interactable = false; // Disable interaction on empty slot
+                SetSelectedButtonColor(Color.white);
+            }
+            if (nameText != null)
+            {
+                nameText.text = "Empty Slot";
             }
         }
     }
