@@ -56,5 +56,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "MonopolEats.sln"
+    "dotnet.defaultSolution": "MonopolEats.sln",
+    "FSharp.suggestGitignore": false
 }
