@@ -42,9 +42,6 @@ namespace SteamLobbyTutorial
             var lobby = new CSteamID(SteamLobby.Instance.lobbyID);
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
 
-            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
-            List<CSteamID> orderedMembers = new List<CSteamID>();
-
             if (memberCount == 0)
             {
                 Debug.LogWarning("Lobby has no members.. retrying...");
@@ -52,6 +49,8 @@ namespace SteamLobbyTutorial
                 return;
             }
 
+            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
+            List<CSteamID> orderedMembers = new List<CSteamID>();
             orderedMembers.Add(hostID);
 
             for (int i = 0; i < memberCount; i++)
@@ -63,20 +62,32 @@ namespace SteamLobbyTutorial
                 }
             }
 
-            int j = 0;
-            foreach (var member in orderedMembers)
+            int maxSlots = Mathf.Min(playerListParent.childCount, 4); // Use max 4 slots available
+
+            for (int i = 0; i < maxSlots; i++)
             {
-                TextMeshProUGUI txtMesh = playerListParent.GetChild(j).GetChild(0).GetComponent<TextMeshProUGUI>();
-                PlayerLobbyHandler playerLobbyHandler = playerListParent.GetChild(j).GetComponent<PlayerLobbyHandler>();
+                var slotTransform = playerListParent.GetChild(i);
+                var playerLobbyHandler = slotTransform.GetComponent<PlayerLobbyHandler>();
+                var txtMesh = slotTransform.GetChild(0).GetComponent<TextMeshProUGUI>();
 
                 playerLobbyHandlers.Add(playerLobbyHandler);
                 playerNameTexts.Add(txtMesh);
 
-                string playerName = SteamFriends.GetFriendPersonaName(member);
-                playerNameTexts[j].text = playerName;
-                j++;
+                if (i < orderedMembers.Count)
+                {
+                    string playerName = SteamFriends.GetFriendPersonaName(orderedMembers[i]);
+                    txtMesh.text = playerName;
+                    slotTransform.gameObject.SetActive(true);
+                }
+                else
+                {
+                    // No player for this slot, clear the name and optionally disable the slot
+                    txtMesh.text = "Waiting...";
+                    slotTransform.gameObject.SetActive(true);  // or false if you want to hide empty slots
+                }
             }
         }
+
 
         public void OnPlayButtonClicked()
         {
@@ -88,9 +99,14 @@ namespace SteamLobbyTutorial
 
         public void RegisterPlayer(PlayerLobbyHandler player)
         {
-            player.transform.SetParent(playerListParent, false);
+            // Don't set parent if you're using fixed slots
+            // player.transform.SetParent(playerListParent, false);
+
+            // Just update UI, assuming your playerLobbyHandlers list is managed in UpdatePlayerLobbyUI
             UpdatePlayerLobbyUI();
         }
+
+
 
         [Server]
         public void CheckAllPlayersReady()
