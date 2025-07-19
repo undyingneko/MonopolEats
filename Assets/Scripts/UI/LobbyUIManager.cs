@@ -16,8 +16,6 @@ namespace SteamLobbyTutorial
         public List<PlayerLobbyHandler> playerLobbyHandlers = new List<PlayerLobbyHandler>();
         public Button playGameButton;
 
-        private const int MaxPlayers = 4;
-
         void Awake()
         {
             if (Instance == null)
@@ -41,14 +39,11 @@ namespace SteamLobbyTutorial
             playerNameTexts.Clear();
             playerLobbyHandlers.Clear();
 
-            if (playerListParent.childCount < MaxPlayers)
-            {
-                Debug.LogError($"Not enough UI slots! Expected {MaxPlayers}, but found {playerListParent.childCount}");
-                return;
-            }
-
             var lobby = new CSteamID(SteamLobby.Instance.lobbyID);
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
+
+            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
+            List<CSteamID> orderedMembers = new List<CSteamID>();
 
             if (memberCount == 0)
             {
@@ -57,8 +52,7 @@ namespace SteamLobbyTutorial
                 return;
             }
 
-            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
-            List<CSteamID> orderedMembers = new List<CSteamID> { hostID };
+            orderedMembers.Add(hostID);
 
             for (int i = 0; i < memberCount; i++)
             {
@@ -75,9 +69,11 @@ namespace SteamLobbyTutorial
             int j = 0;
             foreach (var member in orderedMembers)
             {
-                if (j >= MaxPlayers)
+                // Check before accessing the child
+                if (j >= playerListParent.childCount)
                 {
-                    Debug.LogWarning($"Reached max player UI slots at index {j}, skipping remaining players.");
+                    Debug.LogWarning($"Not enough UI slots for player index {j}. Skipping update.");
+                    // continue;
                     break;
                 }
 
@@ -95,30 +91,14 @@ namespace SteamLobbyTutorial
                 playerNameTexts.Add(txtMesh);
 
                 string playerName = SteamFriends.GetFriendPersonaName(member);
-                txtMesh.text = playerName;
+                playerNameTexts[j].text = playerName;
 
                 Debug.Log($"Set player name: {playerName} at index {j}");
 
                 j++;
             }
-
-            // Clear remaining slots if fewer players
-            for (int k = j; k < MaxPlayers; k++)
-            {
-                Transform playerEntry = playerListParent.GetChild(k);
-                if (playerEntry.childCount > 0)
-                {
-                    TextMeshProUGUI txtMesh = playerEntry.GetChild(0).GetComponent<TextMeshProUGUI>();
-                    txtMesh.text = "Empty Slot";
-                }
-
-                PlayerLobbyHandler handler = playerEntry.GetComponent<PlayerLobbyHandler>();
-                if (handler != null)
-                {
-                    handler.ResetState(); // You can implement ResetState() in PlayerLobbyHandler to clear ready status etc.
-                }
-            }
         }
+
 
         public void OnPlayButtonClicked()
         {
@@ -159,5 +139,6 @@ namespace SteamLobbyTutorial
             yield return new WaitForSeconds(1f);
             UpdatePlayerLobbyUI();
         }
+
     }
 }

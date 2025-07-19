@@ -68,20 +68,5 @@ namespace SteamLobbyTutorial
                 SetSelectedButtonColor(Color.white);
             }
         }
-
-        public void ResetState()
-        {
-            isReady = false;
-            if (readyButton != null)
-            {
-                readyButton.interactable = false; // Disable interaction on empty slot
-                SetSelectedButtonColor(Color.white);
-            }
-            if (nameText != null)
-            {
-                nameText.text = "Empty Slot";
-            }
-        }
     }
-
 }
