@@ -41,6 +41,11 @@ namespace SteamLobbyTutorial
             playerNameTexts.Clear();
             playerLobbyHandlers.Clear();
 
+            foreach (Transform child in playerListParent)
+            {
+                Destroy(child.gameObject); // Clear old UI entries
+            }
+
             var lobby = new CSteamID(SteamLobby.Instance.lobbyID);
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
 
@@ -63,27 +68,20 @@ namespace SteamLobbyTutorial
                 }
             }
 
-            // Ensure enough UI entries
-            while (playerListParent.childCount < orderedMembers.Count)
-            {
-                Instantiate(playerListItemPrefab, playerListParent);
-            }
-
-            int j = 0;
             foreach (var member in orderedMembers)
             {
-                Transform playerItem = playerListParent.GetChild(j);
-                TextMeshProUGUI txtMesh = playerItem.GetChild(0).GetComponent<TextMeshProUGUI>();
+                GameObject playerItem = Instantiate(playerListItemPrefab, playerListParent);
+                TextMeshProUGUI txtMesh = playerItem.transform.GetChild(0).GetComponent<TextMeshProUGUI>();
                 PlayerLobbyHandler playerLobbyHandler = playerItem.GetComponent<PlayerLobbyHandler>();
 
                 playerLobbyHandlers.Add(playerLobbyHandler);
                 playerNameTexts.Add(txtMesh);
 
                 string playerName = SteamFriends.GetFriendPersonaName(member);
-                playerNameTexts[j].text = playerName;
-                j++;
+                txtMesh.text = playerName;
             }
         }
+
 
         public void OnPlayButtonClicked()
         {

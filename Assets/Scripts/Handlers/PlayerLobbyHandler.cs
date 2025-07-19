@@ -28,7 +28,11 @@ namespace SteamLobbyTutorial
         public override void OnStartClient()
         {
             base.OnStartClient();
-            LobbyUIManager.Instance.RegisterPlayer(this);
+
+            if (isServer)
+            {
+                LobbyUIManager.Instance.RegisterPlayer(this);
+            }
         }
 
         [Command]
