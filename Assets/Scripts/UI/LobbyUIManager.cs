@@ -11,7 +11,9 @@ namespace SteamLobbyTutorial
     public class LobbyUIManager : NetworkBehaviour
     {
         public static LobbyUIManager Instance;
+
         public Transform playerListParent;
+        public GameObject playerListItemPrefab; // New prefab reference
         public List<TextMeshProUGUI> playerNameTexts = new List<TextMeshProUGUI>();
         public List<PlayerLobbyHandler> playerLobbyHandlers = new List<PlayerLobbyHandler>();
         public Button playGameButton;
@@ -42,9 +44,6 @@ namespace SteamLobbyTutorial
             var lobby = new CSteamID(SteamLobby.Instance.lobbyID);
             int memberCount = SteamMatchmaking.GetNumLobbyMembers(lobby);
 
-            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
-            List<CSteamID> orderedMembers = new List<CSteamID>();
-
             if (memberCount == 0)
             {
                 Debug.LogWarning("Lobby has no members.. retrying...");
@@ -52,7 +51,8 @@ namespace SteamLobbyTutorial
                 return;
             }
 
-            orderedMembers.Add(hostID);
+            CSteamID hostID = new CSteamID(ulong.Parse(SteamMatchmaking.GetLobbyData(lobby, "HostAddress")));
+            List<CSteamID> orderedMembers = new List<CSteamID> { hostID };
 
             for (int i = 0; i < memberCount; i++)
             {
@@ -63,11 +63,18 @@ namespace SteamLobbyTutorial
                 }
             }
 
+            // Ensure enough UI entries
+            while (playerListParent.childCount < orderedMembers.Count)
+            {
+                Instantiate(playerListItemPrefab, playerListParent);
+            }
+
             int j = 0;
             foreach (var member in orderedMembers)
             {
-                TextMeshProUGUI txtMesh = playerListParent.GetChild(j).GetChild(0).GetComponent<TextMeshProUGUI>();
-                PlayerLobbyHandler playerLobbyHandler = playerListParent.GetChild(j).GetComponent<PlayerLobbyHandler>();
+                Transform playerItem = playerListParent.GetChild(j);
+                TextMeshProUGUI txtMesh = playerItem.GetChild(0).GetComponent<TextMeshProUGUI>();
+                PlayerLobbyHandler playerLobbyHandler = playerItem.GetComponent<PlayerLobbyHandler>();
 
                 playerLobbyHandlers.Add(playerLobbyHandler);
                 playerNameTexts.Add(txtMesh);
@@ -117,6 +124,5 @@ namespace SteamLobbyTutorial
             yield return new WaitForSeconds(1f);
             UpdatePlayerLobbyUI();
         }
-
     }
 }
